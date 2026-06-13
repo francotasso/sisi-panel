@@ -50,9 +50,10 @@ interface StoreFormProps {
   store?: Store;
   onSubmit: (data: StoreFormData) => void;
   isSubmitting?: boolean;
+  readOnly?: boolean;
 }
 
-export function StoreForm({ store, onSubmit, isSubmitting }: StoreFormProps) {
+export function StoreForm({ store, onSubmit, isSubmitting, readOnly }: StoreFormProps) {
   const form = useForm<StoreFormData>({
     resolver: zodResolver(storeSchema),
     defaultValues: {
@@ -84,7 +85,7 @@ export function StoreForm({ store, onSubmit, isSubmitting }: StoreFormProps) {
             <FormItem>
               <FormLabel>Nombre de la tienda</FormLabel>
               <FormControl>
-                <Input placeholder="Nombre" {...field} />
+                <Input disabled={readOnly} placeholder="Nombre" {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -98,7 +99,7 @@ export function StoreForm({ store, onSubmit, isSubmitting }: StoreFormProps) {
             <FormItem>
               <FormLabel>Descripción</FormLabel>
               <FormControl>
-                <Textarea placeholder="Descripción de la tienda" className="min-h-[100px]" {...field} />
+                <Textarea disabled={readOnly} placeholder="Descripción de la tienda" className="min-h-[100px]" {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -115,7 +116,7 @@ export function StoreForm({ store, onSubmit, isSubmitting }: StoreFormProps) {
                 <FormItem>
                   <FormLabel>Teléfono</FormLabel>
                   <FormControl>
-                    <Input placeholder="+54 11 1234-5678" {...field} />
+                    <Input disabled={readOnly} placeholder="+54 11 1234-5678" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -128,7 +129,7 @@ export function StoreForm({ store, onSubmit, isSubmitting }: StoreFormProps) {
                 <FormItem>
                   <FormLabel>WhatsApp</FormLabel>
                   <FormControl>
-                    <Input placeholder="+54 11 1234-5678" {...field} />
+                    <Input disabled={readOnly} placeholder="+54 11 1234-5678" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -154,7 +155,7 @@ export function StoreForm({ store, onSubmit, isSubmitting }: StoreFormProps) {
                 <FormItem>
                   <FormLabel>URL del mapa</FormLabel>
                   <FormControl>
-                    <Input placeholder="https://maps.google.com/..." {...field} />
+                    <Input disabled={readOnly} placeholder="https://maps.google.com/..." {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -167,7 +168,7 @@ export function StoreForm({ store, onSubmit, isSubmitting }: StoreFormProps) {
                 <FormItem className="md:col-span-2">
                   <FormLabel>Dirección</FormLabel>
                   <FormControl>
-                    <Input placeholder="Calle y número" {...field} />
+                    <Input disabled={readOnly} placeholder="Calle y número" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -179,15 +180,17 @@ export function StoreForm({ store, onSubmit, isSubmitting }: StoreFormProps) {
         <div>
           <div className="mb-4 flex items-center justify-between">
             <h3 className="text-lg font-medium">Horarios</h3>
-            <Button
-              type="button"
-              variant="outline"
-              size="sm"
-              onClick={() => appendHour({ day: "", is_closed: false })}
-            >
-              <Plus className="mr-2 h-4 w-4" />
-              Agregar horario
-            </Button>
+            {!readOnly && (
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={() => appendHour({ day: "", is_closed: false })}
+              >
+                <Plus className="mr-2 h-4 w-4" />
+                Agregar horario
+              </Button>
+            )}
           </div>
           <div className="space-y-4">
             {hoursFields.map((field, index) => (
@@ -200,7 +203,7 @@ export function StoreForm({ store, onSubmit, isSubmitting }: StoreFormProps) {
                       <FormItem>
                         <FormLabel>Día</FormLabel>
                         <FormControl>
-                          <Input placeholder="Lunes" {...field} />
+                          <Input disabled={readOnly} placeholder="Lunes" {...field} />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -213,7 +216,7 @@ export function StoreForm({ store, onSubmit, isSubmitting }: StoreFormProps) {
                       <FormItem>
                         <FormLabel>Apertura</FormLabel>
                         <FormControl>
-                          <Input placeholder="09:00" {...field} />
+                          <Input disabled={readOnly} placeholder="09:00" {...field} />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -226,7 +229,7 @@ export function StoreForm({ store, onSubmit, isSubmitting }: StoreFormProps) {
                       <FormItem>
                         <FormLabel>Cierre</FormLabel>
                         <FormControl>
-                          <Input placeholder="18:00" {...field} />
+                          <Input disabled={readOnly} placeholder="18:00" {...field} />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -239,6 +242,7 @@ export function StoreForm({ store, onSubmit, isSubmitting }: StoreFormProps) {
                       <FormItem className="flex items-center gap-2 pt-6">
                         <FormControl>
                           <Checkbox
+                            disabled={readOnly}
                             checked={field.value}
                             onCheckedChange={field.onChange}
                           />
@@ -249,15 +253,17 @@ export function StoreForm({ store, onSubmit, isSubmitting }: StoreFormProps) {
                     )}
                   />
                 </div>
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="icon"
-                  className="mt-6 shrink-0 text-destructive"
-                  onClick={() => removeHour(index)}
-                >
-                  <Trash2 className="h-4 w-4" />
-                </Button>
+                {!readOnly && (
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="icon"
+                    className="mt-6 shrink-0 text-destructive"
+                    onClick={() => removeHour(index)}
+                  >
+                    <Trash2 className="h-4 w-4" />
+                  </Button>
+                )}
               </div>
             ))}
           </div>
@@ -266,15 +272,17 @@ export function StoreForm({ store, onSubmit, isSubmitting }: StoreFormProps) {
         <div>
           <div className="mb-4 flex items-center justify-between">
             <h3 className="text-lg font-medium">Redes sociales</h3>
-            <Button
-              type="button"
-              variant="outline"
-              size="sm"
-              onClick={() => appendSocial({ platform: "", url: "" })}
-            >
-              <Plus className="mr-2 h-4 w-4" />
-              Agregar red social
-            </Button>
+            {!readOnly && (
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={() => appendSocial({ platform: "", url: "" })}
+              >
+                <Plus className="mr-2 h-4 w-4" />
+                Agregar red social
+              </Button>
+            )}
           </div>
           <div className="space-y-4">
             {socialFields.map((field, index) => (
@@ -287,7 +295,7 @@ export function StoreForm({ store, onSubmit, isSubmitting }: StoreFormProps) {
                       <FormItem>
                         <FormLabel>Plataforma</FormLabel>
                         <FormControl>
-                          <Input placeholder="instagram" {...field} />
+                          <Input disabled={readOnly} placeholder="instagram" {...field} />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -300,29 +308,31 @@ export function StoreForm({ store, onSubmit, isSubmitting }: StoreFormProps) {
                       <FormItem>
                         <FormLabel>URL</FormLabel>
                         <FormControl>
-                          <Input placeholder="https://instagram.com/..." {...field} />
+                          <Input disabled={readOnly} placeholder="https://instagram.com/..." {...field} />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
                     )}
                   />
                 </div>
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="icon"
-                  className="mt-6 shrink-0 text-destructive"
-                  onClick={() => removeSocial(index)}
-                >
-                  <Trash2 className="h-4 w-4" />
-                </Button>
+                {!readOnly && (
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="icon"
+                    className="mt-6 shrink-0 text-destructive"
+                    onClick={() => removeSocial(index)}
+                  >
+                    <Trash2 className="h-4 w-4" />
+                  </Button>
+                )}
               </div>
             ))}
           </div>
         </div>
 
-        <Button type="submit" disabled={isSubmitting}>
-          Guardar cambios
+        <Button type="submit" disabled={isSubmitting || readOnly}>
+          {readOnly ? "Solo lectura" : "Guardar cambios"}
         </Button>
       </form>
     </Form>

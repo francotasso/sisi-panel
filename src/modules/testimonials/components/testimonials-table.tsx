@@ -20,6 +20,7 @@ import { MoreHorizontal, Pencil, Trash2, Plus, Star } from "lucide-react";
 import { EmptyState } from "@/components/shared/empty-state";
 import { useTestimonials } from "../hooks/use-testimonials";
 import { useDeleteTestimonial } from "../hooks/use-delete-testimonial";
+import { useAuthStore } from "@/stores/auth-store";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 
@@ -27,6 +28,10 @@ export function TestimonialsTable() {
   const router = useRouter();
   const { data, isLoading } = useTestimonials();
   const deleteTestimonial = useDeleteTestimonial();
+  const isEditor = useAuthStore((s) => {
+    const u = s.user;
+    return u?.role === "editor" || u?.user_metadata?.role === "editor";
+  });
 
   const renderStars = (rating?: number) => {
     if (!rating) return null;
@@ -45,12 +50,14 @@ export function TestimonialsTable() {
   return (
     <div className="space-y-4">
       <div className="flex justify-end">
-        <Link href="/admin/testimonials/create">
-          <Button>
-            <Plus className="mr-2 h-4 w-4" />
-            Nuevo testimonio
-          </Button>
-        </Link>
+        {!isEditor && (
+          <Link href="/admin/testimonials/create">
+            <Button>
+              <Plus className="mr-2 h-4 w-4" />
+              Nuevo testimonio
+            </Button>
+          </Link>
+        )}
       </div>
 
       <div className="rounded-md border overflow-x-auto">
@@ -60,14 +67,14 @@ export function TestimonialsTable() {
               <TableHead>Cliente</TableHead>
               <TableHead>Testimonio</TableHead>
               <TableHead className="hidden md:table-cell">Calificación</TableHead>
-              <TableHead className="w-[70px]"></TableHead>
+              {!isEditor && <TableHead className="w-[70px]"></TableHead>}
             </TableRow>
           </TableHeader>
           <TableBody>
             {isLoading ? (
               Array.from({ length: 3 }).map((_, i) => (
                 <TableRow key={i}>
-                  {Array.from({ length: 3 }).map((_, j) => (
+                  {Array.from({ length: isEditor ? 3 : 4 }).map((_, j) => (
                     <TableCell key={j}>
                       <Skeleton className="h-4 w-full" />
                     </TableCell>
@@ -76,7 +83,7 @@ export function TestimonialsTable() {
               ))
             ) : data?.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={4}>
+                <TableCell colSpan={isEditor ? 3 : 4}>
                   <EmptyState />
                 </TableCell>
               </TableRow>
@@ -92,24 +99,26 @@ export function TestimonialsTable() {
                     {testimonial.text}
                   </TableCell>
                   <TableCell className="hidden md:table-cell">{renderStars(testimonial.rating)}</TableCell>
-                  <TableCell>
-                    <DropdownMenu>
-                      <DropdownMenuTrigger render={<Button variant="ghost" size="icon"><MoreHorizontal className="h-4 w-4" /></Button>} />
-                      <DropdownMenuContent align="end">
-                        <DropdownMenuItem className="cursor-pointer" onClick={() => router.push(`/admin/testimonials/edit/${testimonial.id}`)}>
-                          <Pencil className="mr-2 h-4 w-4" />
-                          Editar
-                        </DropdownMenuItem>
-                        <DropdownMenuItem
-                          className="text-destructive cursor-pointer"
-                          onClick={() => deleteTestimonial.mutate(testimonial.id)}
-                        >
-                          <Trash2 className="mr-2 h-4 w-4" />
-                          Eliminar
-                        </DropdownMenuItem>
-                      </DropdownMenuContent>
-                    </DropdownMenu>
-                  </TableCell>
+                  {!isEditor && (
+                    <TableCell>
+                      <DropdownMenu>
+                        <DropdownMenuTrigger render={<Button variant="ghost" size="icon"><MoreHorizontal className="h-4 w-4" /></Button>} />
+                        <DropdownMenuContent align="end">
+                          <DropdownMenuItem className="cursor-pointer" onClick={() => router.push(`/admin/testimonials/edit/${testimonial.id}`)}>
+                            <Pencil className="mr-2 h-4 w-4" />
+                            Editar
+                          </DropdownMenuItem>
+                          <DropdownMenuItem
+                            className="text-destructive cursor-pointer"
+                            onClick={() => deleteTestimonial.mutate(testimonial.id)}
+                          >
+                            <Trash2 className="mr-2 h-4 w-4" />
+                            Eliminar
+                          </DropdownMenuItem>
+                        </DropdownMenuContent>
+                      </DropdownMenu>
+                    </TableCell>
+                  )}
                 </TableRow>
               ))
             )}

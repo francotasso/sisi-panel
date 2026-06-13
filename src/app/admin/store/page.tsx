@@ -6,12 +6,17 @@ import { StoreForm } from "@/modules/store/components/store-form";
 import { useStore } from "@/modules/store/hooks/use-store";
 import { useCreateStore } from "@/modules/store/hooks/use-create-store";
 import { useUpdateStore } from "@/modules/store/hooks/use-update-store";
+import { useAuthStore } from "@/stores/auth-store";
 import type { StoreFormData } from "@/modules/store/types";
 
 export default function StorePage() {
   const { data: store, isLoading } = useStore();
   const createStore = useCreateStore();
   const updateStore = useUpdateStore();
+  const isEditor = useAuthStore((s) => {
+    const u = s.user;
+    return u?.role === "editor" || u?.user_metadata?.role === "editor";
+  });
 
   const onSubmit = (data: StoreFormData) => {
     if (store) {
@@ -35,6 +40,7 @@ export default function StorePage() {
         store={store}
         onSubmit={onSubmit}
         isSubmitting={isSubmitting}
+        readOnly={isEditor}
       />
     </div>
   );

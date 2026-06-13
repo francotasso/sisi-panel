@@ -8,6 +8,7 @@ import {
   Store,
   Star,
   LayoutDashboard,
+  Users,
   LogOut,
   X,
 } from "lucide-react";
@@ -19,6 +20,7 @@ const navigation = [
   { name: "Dashboard", href: "/admin", icon: LayoutDashboard },
   { name: "Productos", href: "/admin/products", icon: Package },
   { name: "Categorías", href: "/admin/categories", icon: LayoutGrid },
+  { name: "Usuarios", href: "/admin/users", icon: Users, adminOnly: true },
   { name: "Tienda", href: "/admin/store", icon: Store },
   { name: "Testimonios", href: "/admin/testimonials", icon: Star },
 ];
@@ -30,7 +32,12 @@ interface SidebarProps {
 
 export function Sidebar({ isOpen, onClose }: SidebarProps) {
   const pathname = usePathname();
-  const { logout } = useAuthStore();
+  const { user, logout } = useAuthStore();
+  const isAdmin = user?.role === "admin" || user?.user_metadata?.role === "admin";
+
+  const visibleNav = navigation.filter(
+    (item) => !item.adminOnly || isAdmin
+  );
 
   const nav = (
     <>
@@ -41,7 +48,7 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
         </button>
       </div>
       <nav className="flex-1 space-y-1 p-4" onClick={onClose}>
-        {navigation.map((item) => {
+        {visibleNav.map((item) => {
           const isActive =
             item.href === "/admin"
               ? pathname === "/admin"
