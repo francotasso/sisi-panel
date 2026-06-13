@@ -78,3 +78,7 @@ export interface BulkUploadResponse {
   created: number;
   errors?: { index: number; error: string }[];
 }
+
+export interface ExportResponse {
+  items: Record<string, unknown>[];
+}

@@ -1,12 +1,22 @@
 "use client";
 
-import { useRef } from "react";
+import { useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Upload, Loader2 } from "lucide-react";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { Upload, Loader2, Trash2, Plus } from "lucide-react";
 import { useBulkUpload } from "../hooks/use-bulk-upload";
 
 export function BulkUploadButton() {
   const inputRef = useRef<HTMLInputElement>(null);
+  const [parsedData, setParsedData] = useState<Record<string, unknown> | null>(null);
+  const [dialogOpen, setDialogOpen] = useState(false);
   const bulkUpload = useBulkUpload();
 
   const handleFile = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -20,7 +30,8 @@ export function BulkUploadButton() {
       if (!body.items || !Array.isArray(body.items)) {
         throw new Error("El archivo debe contener un array de productos en la raíz o en la propiedad 'items'");
       }
-      bulkUpload.mutate(body as Record<string, unknown>);
+      setParsedData(body as Record<string, unknown>);
+      setDialogOpen(true);
     } catch (err) {
       const message = err instanceof Error ? err.message : "Error al leer el archivo";
       const { toast } = await import("sonner");
@@ -28,6 +39,13 @@ export function BulkUploadButton() {
     }
 
     e.target.value = "";
+  };
+
+  const handleUpload = (mode: "replace" | "append") => {
+    if (!parsedData) return;
+    setDialogOpen(false);
+    bulkUpload.mutate({ data: parsedData, mode });
+    setParsedData(null);
   };
 
   return (
@@ -52,6 +70,37 @@ export function BulkUploadButton() {
         )}
         Subir JSON
       </Button>
+
+      <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Subir productos</DialogTitle>
+            <DialogDescription>
+              {parsedData?.items
+                ? `Se encontraron ${(parsedData.items as unknown[]).length} producto(s) en el archivo. ¿Cómo deseas subirlos?`
+                : "Procesando archivo..."}
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button
+              variant="destructive"
+              onClick={() => handleUpload("replace")}
+              disabled={bulkUpload.isPending}
+            >
+              <Trash2 className="mr-2 h-4 w-4" />
+              Eliminar todo y subir
+            </Button>
+            <Button
+              variant="default"
+              onClick={() => handleUpload("append")}
+              disabled={bulkUpload.isPending}
+            >
+              <Plus className="mr-2 h-4 w-4" />
+              Solo agregar
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </>
   );
 }

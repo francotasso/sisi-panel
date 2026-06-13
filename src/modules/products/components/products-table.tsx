@@ -36,6 +36,7 @@ import {
 } from "lucide-react";
 import { EmptyState } from "@/components/shared/empty-state";
 import { BulkUploadButton } from "./bulk-upload-button";
+import { DownloadJsonButton } from "./download-json-button";
 import { useProducts } from "../hooks/use-products";
 import { useDeleteProduct } from "../hooks/use-delete-product";
 import type { ProductsParams } from "../types";
@@ -141,6 +142,7 @@ export function ProductsTable({ categories }: ProductsTableProps) {
           </SelectContent>
         </Select>
         <BulkUploadButton />
+        <DownloadJsonButton />
         <Link href="/admin/products/create" className="w-full sm:w-auto">
           <Button className="w-full sm:w-auto">
             <Plus className="mr-2 h-4 w-4" />
