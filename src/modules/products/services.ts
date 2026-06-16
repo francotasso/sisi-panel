@@ -25,4 +25,10 @@ export const productsService = {
 
   exportAll: () =>
     apiClient.get<ExportResponse>("/products/export"),
+
+  uploadImage: (productId: string, file: File) => {
+    const formData = new FormData();
+    formData.append("file", file);
+    return apiClient.uploadFile<Product>(`/products/${productId}/image`, formData);
+  },
 };

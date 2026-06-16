@@ -7,6 +7,7 @@ import { useStore } from "@/modules/store/hooks/use-store";
 import { useCreateStore } from "@/modules/store/hooks/use-create-store";
 import { useUpdateStore } from "@/modules/store/hooks/use-update-store";
 import { useAuthStore } from "@/stores/auth-store";
+import { toast } from "sonner";
 import type { StoreFormData } from "@/modules/store/types";
 
 export default function StorePage() {
@@ -20,9 +21,13 @@ export default function StorePage() {
 
   const onSubmit = (data: StoreFormData) => {
     if (store) {
-      updateStore.mutate(data);
+      updateStore.mutate(data, {
+        onSuccess: () => toast.success("Tienda actualizada correctamente"),
+      });
     } else {
-      createStore.mutate(data);
+      createStore.mutate(data, {
+        onSuccess: () => toast.success("Tienda creada correctamente"),
+      });
     }
   };
 

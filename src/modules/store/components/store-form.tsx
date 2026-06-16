@@ -15,7 +15,7 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { Plus, Trash2 } from "lucide-react";
+import { Plus, Trash2, Loader2, Store as StoreIcon, Phone, Clock, Share2 } from "lucide-react";
 import type { Store, StoreFormData } from "../types";
 
 const contactSchema = z.object({
@@ -77,37 +77,48 @@ export function StoreForm({ store, onSubmit, isSubmitting, readOnly }: StoreForm
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-        <FormField
-          control={form.control}
-          name="store_name"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Nombre de la tienda</FormLabel>
-              <FormControl>
-                <Input disabled={readOnly} placeholder="Nombre" {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8 animate-fade-in">
+        <div className="space-y-4">
+          <div className="flex items-center gap-2 pb-2">
+            <StoreIcon className="h-5 w-5 text-primary" />
+            <h2 className="text-lg font-heading font-semibold">Información de la tienda</h2>
+          </div>
+          <div className="grid gap-4 md:grid-cols-2">
+            <FormField
+              control={form.control}
+              name="store_name"
+              render={({ field }) => (
+                <FormItem className="md:col-span-2">
+                  <FormLabel>Nombre de la tienda</FormLabel>
+                  <FormControl>
+                    <Input disabled={readOnly} placeholder="Nombre" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
 
-        <FormField
-          control={form.control}
-          name="description"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Descripción</FormLabel>
-              <FormControl>
-                <Textarea disabled={readOnly} placeholder="Descripción de la tienda" className="min-h-[100px]" {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+            <FormField
+              control={form.control}
+              name="description"
+              render={({ field }) => (
+                <FormItem className="md:col-span-2">
+                  <FormLabel>Descripción</FormLabel>
+                  <FormControl>
+                    <Textarea disabled={readOnly} placeholder="Descripción de la tienda" className="min-h-[100px]" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </div>
+        </div>
 
         <div>
-          <h3 className="mb-4 text-lg font-medium">Contacto</h3>
+          <div className="flex items-center gap-2 pb-4">
+            <Phone className="h-5 w-5 text-primary" />
+            <h2 className="text-lg font-heading font-semibold">Contacto</h2>
+          </div>
           <div className="grid gap-4 md:grid-cols-2">
             <FormField
               control={form.control}
@@ -178,162 +189,181 @@ export function StoreForm({ store, onSubmit, isSubmitting, readOnly }: StoreForm
         </div>
 
         <div>
-          <div className="mb-4 flex items-center justify-between">
-            <h3 className="text-lg font-medium">Horarios</h3>
-            {!readOnly && (
-              <Button
-                type="button"
-                variant="outline"
-                size="sm"
-                onClick={() => appendHour({ day: "", is_closed: false })}
-              >
-                <Plus className="mr-2 h-4 w-4" />
-                Agregar horario
-              </Button>
-            )}
+          <div className="flex items-center gap-2 pb-4">
+            <Clock className="h-5 w-5 text-primary" />
+            <h2 className="text-lg font-heading font-semibold">Horarios</h2>
           </div>
+          {!readOnly && (
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              className="mb-4"
+              onClick={() => appendHour({ day: "", is_closed: false })}
+            >
+              <Plus className="mr-2 h-4 w-4" />
+              Agregar horario
+            </Button>
+          )}
           <div className="space-y-4">
-            {hoursFields.map((field, index) => (
-              <div key={field.id} className="flex gap-4 items-start rounded-lg border p-4">
-                <div className="flex-1 grid gap-3 md:grid-cols-4">
-                  <FormField
-                    control={form.control}
-                    name={`hours.${index}.day`}
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Día</FormLabel>
-                        <FormControl>
-                          <Input disabled={readOnly} placeholder="Lunes" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  <FormField
-                    control={form.control}
-                    name={`hours.${index}.open_time`}
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Apertura</FormLabel>
-                        <FormControl>
-                          <Input disabled={readOnly} placeholder="09:00" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  <FormField
-                    control={form.control}
-                    name={`hours.${index}.close_time`}
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Cierre</FormLabel>
-                        <FormControl>
-                          <Input disabled={readOnly} placeholder="18:00" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  <FormField
-                    control={form.control}
-                    name={`hours.${index}.is_closed`}
-                    render={({ field }) => (
-                      <FormItem className="flex items-center gap-2 pt-6">
-                        <FormControl>
-                          <Checkbox
-                            disabled={readOnly}
-                            checked={field.value}
-                            onCheckedChange={field.onChange}
-                          />
-                        </FormControl>
-                        <FormLabel className="!mt-0">Cerrado</FormLabel>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
+            {hoursFields.length === 0 ? (
+              <p className="text-sm text-muted-foreground py-4 text-center bg-muted/30 rounded-lg">
+                No hay horarios cargados.
+              </p>
+            ) : (
+              hoursFields.map((field, index) => (
+                <div key={field.id} className="flex gap-4 items-start rounded-lg border p-4 transition-colors hover:border-muted-foreground/30">
+                  <div className="flex-1 grid gap-3 md:grid-cols-4">
+                    <FormField
+                      control={form.control}
+                      name={`hours.${index}.day`}
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Día</FormLabel>
+                          <FormControl>
+                            <Input disabled={readOnly} placeholder="Lunes" {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name={`hours.${index}.open_time`}
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Apertura</FormLabel>
+                          <FormControl>
+                            <Input disabled={readOnly} placeholder="09:00" {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name={`hours.${index}.close_time`}
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Cierre</FormLabel>
+                          <FormControl>
+                            <Input disabled={readOnly} placeholder="18:00" {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name={`hours.${index}.is_closed`}
+                      render={({ field }) => (
+                        <FormItem className="flex items-center gap-2 pt-6">
+                          <FormControl>
+                            <Checkbox
+                              disabled={readOnly}
+                              checked={field.value}
+                              onCheckedChange={field.onChange}
+                            />
+                          </FormControl>
+                          <FormLabel className="!mt-0">Cerrado</FormLabel>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+                  {!readOnly && (
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="icon"
+                      className="mt-6 shrink-0 text-destructive hover:bg-destructive/10"
+                      onClick={() => removeHour(index)}
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
+                  )}
                 </div>
-                {!readOnly && (
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    size="icon"
-                    className="mt-6 shrink-0 text-destructive"
-                    onClick={() => removeHour(index)}
-                  >
-                    <Trash2 className="h-4 w-4" />
-                  </Button>
-                )}
-              </div>
-            ))}
+              ))
+            )}
           </div>
         </div>
 
         <div>
-          <div className="mb-4 flex items-center justify-between">
-            <h3 className="text-lg font-medium">Redes sociales</h3>
-            {!readOnly && (
-              <Button
-                type="button"
-                variant="outline"
-                size="sm"
-                onClick={() => appendSocial({ platform: "", url: "" })}
-              >
-                <Plus className="mr-2 h-4 w-4" />
-                Agregar red social
-              </Button>
-            )}
+          <div className="flex items-center gap-2 pb-4">
+            <Share2 className="h-5 w-5 text-primary" />
+            <h2 className="text-lg font-heading font-semibold">Redes sociales</h2>
           </div>
+          {!readOnly && (
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              className="mb-4"
+              onClick={() => appendSocial({ platform: "", url: "" })}
+            >
+              <Plus className="mr-2 h-4 w-4" />
+              Agregar red social
+            </Button>
+          )}
           <div className="space-y-4">
-            {socialFields.map((field, index) => (
-              <div key={field.id} className="flex gap-4 items-start rounded-lg border p-4">
-                <div className="flex-1 grid gap-3 md:grid-cols-2">
-                  <FormField
-                    control={form.control}
-                    name={`social_media.${index}.platform`}
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Plataforma</FormLabel>
-                        <FormControl>
-                          <Input disabled={readOnly} placeholder="instagram" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  <FormField
-                    control={form.control}
-                    name={`social_media.${index}.url`}
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>URL</FormLabel>
-                        <FormControl>
-                          <Input disabled={readOnly} placeholder="https://instagram.com/..." {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
+            {socialFields.length === 0 ? (
+              <p className="text-sm text-muted-foreground py-4 text-center bg-muted/30 rounded-lg">
+                No hay redes sociales cargadas.
+              </p>
+            ) : (
+              socialFields.map((field, index) => (
+                <div key={field.id} className="flex gap-4 items-start rounded-lg border p-4 transition-colors hover:border-muted-foreground/30">
+                  <div className="flex-1 grid gap-3 md:grid-cols-2">
+                    <FormField
+                      control={form.control}
+                      name={`social_media.${index}.platform`}
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Plataforma</FormLabel>
+                          <FormControl>
+                            <Input disabled={readOnly} placeholder="instagram" {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name={`social_media.${index}.url`}
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>URL</FormLabel>
+                          <FormControl>
+                            <Input disabled={readOnly} placeholder="https://instagram.com/..." {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+                  {!readOnly && (
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="icon"
+                      className="mt-6 shrink-0 text-destructive hover:bg-destructive/10"
+                      onClick={() => removeSocial(index)}
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
+                  )}
                 </div>
-                {!readOnly && (
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    size="icon"
-                    className="mt-6 shrink-0 text-destructive"
-                    onClick={() => removeSocial(index)}
-                  >
-                    <Trash2 className="h-4 w-4" />
-                  </Button>
-                )}
-              </div>
-            ))}
+              ))
+            )}
           </div>
         </div>
 
-        <Button type="submit" disabled={isSubmitting || readOnly}>
-          {readOnly ? "Solo lectura" : "Guardar cambios"}
-        </Button>
+        <div className="flex justify-end">
+          <Button type="submit" disabled={isSubmitting || readOnly} size="lg" className="min-w-[160px]">
+            {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+            {readOnly ? "Solo lectura" : "Guardar cambios"}
+          </Button>
+        </div>
       </form>
     </Form>
   );

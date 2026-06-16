@@ -119,6 +119,52 @@ class ApiClient {
   delete<T>(path: string, options?: ApiOptions): Promise<T> {
     return this.request<T>(path, { ...options, method: "DELETE" });
   }
+
+  async uploadFile<T>(path: string, formData: FormData): Promise<T> {
+    const url = `${this.baseUrl}${path}`;
+
+    const headers: Record<string, string> = {};
+    if (typeof window !== "undefined") {
+      const token = getToken();
+      if (token) {
+        headers["Authorization"] = `Bearer ${token}`;
+      }
+    }
+
+    const response = await fetch(url, {
+      method: "POST",
+      headers,
+      body: formData,
+    });
+
+    if (!response.ok) {
+      if (response.status === 401 || response.status === 403) {
+        const { clearToken } = await import("@/lib/auth");
+        const { useAuthStore } = await import("@/stores/auth-store");
+        clearToken();
+        useAuthStore.setState({
+          user: null,
+          token: null,
+          isAuthenticated: false,
+        });
+        if (typeof window !== "undefined") {
+          window.location.href = "/login?expired=1";
+        }
+      }
+
+      const error = await response.json().catch(() => ({}));
+      throw new ApiError(
+        error.detail || error.message || "An error occurred",
+        response.status
+      );
+    }
+
+    if (response.status === 204) {
+      return undefined as T;
+    }
+
+    return response.json();
+  }
 }
 
 export class ApiError extends Error {

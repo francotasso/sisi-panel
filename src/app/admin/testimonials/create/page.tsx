@@ -2,6 +2,7 @@
 
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 import { PageHeader } from "@/components/shared/page-header";
 import { TestimonialForm } from "@/modules/testimonials/components/testimonial-form";
 import { useCreateTestimonial } from "@/modules/testimonials/hooks/use-create-testimonial";
@@ -24,7 +25,10 @@ export default function CreateTestimonialPage() {
 
   const onSubmit = (data: TestimonialFormData) => {
     createTestimonial.mutate(data, {
-      onSuccess: () => router.push("/admin/testimonials"),
+      onSuccess: () => {
+        toast.success("Testimonio creado correctamente");
+        router.push("/admin/testimonials");
+      },
     });
   };
 

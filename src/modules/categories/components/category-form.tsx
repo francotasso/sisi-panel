@@ -5,6 +5,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Loader2 } from "lucide-react";
 import {
   Form,
   FormControl,
@@ -50,6 +51,7 @@ export function CategoryForm({ category, onSubmit, isSubmitting }: CategoryFormP
           )}
         />
         <Button type="submit" disabled={isSubmitting}>
+          {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
           {category ? "Actualizar categoría" : "Crear categoría"}
         </Button>
       </form>

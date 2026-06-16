@@ -2,6 +2,7 @@
 
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 import { PageHeader } from "@/components/shared/page-header";
 import { CategoryForm } from "@/modules/categories/components/category-form";
 import { useCreateCategory } from "@/modules/categories/hooks/use-create-category";
@@ -24,7 +25,10 @@ export default function CreateCategoryPage() {
 
   const onSubmit = (data: CategoryFormData) => {
     createCategory.mutate(data, {
-      onSuccess: () => router.push("/admin/categories"),
+      onSuccess: () => {
+        toast.success("Categoría creada correctamente");
+        router.push("/admin/categories");
+      },
     });
   };
 

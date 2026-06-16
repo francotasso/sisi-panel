@@ -2,8 +2,9 @@
 
 import { useEffect } from "react";
 import { useRouter, useParams } from "next/navigation";
+import { toast } from "sonner";
 import { PageHeader } from "@/components/shared/page-header";
-import { LoadingState } from "@/components/shared/loading-state";
+import { FormSkeleton } from "@/components/shared/form-skeleton";
 import { CategoryForm } from "@/modules/categories/components/category-form";
 import { useCategory } from "@/modules/categories/hooks/use-category";
 import { useUpdateCategory } from "@/modules/categories/hooks/use-update-category";
@@ -30,11 +31,23 @@ export default function EditCategoryPage() {
 
   const onSubmit = (data: CategoryFormData) => {
     updateCategory.mutate(data, {
-      onSuccess: () => router.push("/admin/categories"),
+      onSuccess: () => {
+        toast.success("Categoría actualizada correctamente");
+        router.push("/admin/categories");
+      },
     });
   };
 
-  if (isLoading) return <LoadingState />;
+  if (isLoading)
+    return (
+      <div className="max-w-lg">
+        <div className="pb-6">
+          <div className="h-8 w-48 animate-pulse rounded bg-muted" />
+          <div className="mt-1 h-4 w-48 animate-pulse rounded bg-muted" />
+        </div>
+        <FormSkeleton fields={1} rows={1} />
+      </div>
+    );
 
   return (
     <div className="max-w-lg">

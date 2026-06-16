@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Loader2 } from "lucide-react";
+import { Loader2, Sparkles } from "lucide-react";
 import { toast } from "sonner";
 
 export default function LoginPage() {
@@ -51,11 +51,17 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-muted/30">
-      <Card className="w-full max-w-sm">
-        <CardHeader className="text-center">
-          <CardTitle className="text-2xl">Sisi Panel</CardTitle>
-          <CardDescription>Inicia sesión para administrar</CardDescription>
+    <div className="relative flex min-h-screen items-center justify-center overflow-hidden bg-gradient-to-br from-background via-[oklch(0.97_0.02_15)] to-[oklch(0.95_0.04_15)] dark:from-background dark:via-[oklch(0.15_0.02_15)] dark:to-[oklch(0.12_0.03_15)]">
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,oklch(0.63_0.18_15/0.08),transparent_50%)] dark:bg-[radial-gradient(ellipse_at_top_right,oklch(0.75_0.14_15/0.12),transparent_50%)]" />
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_left,oklch(0.73_0.15_15/0.06),transparent_50%)] dark:bg-[radial-gradient(ellipse_at_bottom_left,oklch(0.63_0.18_15/0.08),transparent_50%)]" />
+
+      <Card className="relative w-full max-w-sm animate-scale-in shadow-xl">
+        <CardHeader className="text-center pb-2">
+          <div className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-primary/10">
+            <Sparkles className="h-6 w-6 text-primary" />
+          </div>
+          <CardTitle className="text-2xl font-heading">Sisi Panel</CardTitle>
+          <CardDescription>Inicia sesión para administrar tu tienda</CardDescription>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-4">
@@ -64,7 +70,7 @@ export default function LoginPage() {
               <Input
                 id="email"
                 type="email"
-                placeholder="admin@example.com"
+                placeholder="admin@ejemplo.com"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required

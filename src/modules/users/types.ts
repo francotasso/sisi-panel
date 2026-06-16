@@ -8,8 +8,10 @@ export interface RegisterUserPayload {
 export interface UpdateUserPayload {
   email?: string;
   password?: string;
-  name?: string;
-  role?: string;
+  user_metadata?: {
+    name?: string;
+    role?: string;
+  };
 }
 
 export interface UserListItem {

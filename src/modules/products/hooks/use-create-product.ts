@@ -10,7 +10,6 @@ export function useCreateProduct() {
     mutationFn: (data: ProductFormData) => productsService.create(data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["products"] });
-      toast.success("Producto creado exitosamente");
     },
     onError: (error) => {
       toast.error(error instanceof Error ? error.message : "Error al crear producto");

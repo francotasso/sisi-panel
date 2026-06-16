@@ -6,6 +6,7 @@ import { z } from "zod";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import { Loader2 } from "lucide-react";
 import {
   Form,
   FormControl,
@@ -97,6 +98,7 @@ export function TestimonialForm({ testimonial, onSubmit, isSubmitting }: Testimo
           )}
         />
         <Button type="submit" disabled={isSubmitting}>
+          {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
           {testimonial ? "Actualizar testimonio" : "Crear testimonio"}
         </Button>
       </form>

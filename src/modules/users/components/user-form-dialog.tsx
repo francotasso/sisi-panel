@@ -66,9 +66,8 @@ export function UserFormDialog({ open, onOpenChange, user }: UserFormDialogProps
         {
           id: user!.id,
           data: {
-            name,
             email,
-            role,
+            user_metadata: { name, role },
             ...(password ? { password } : {}),
           },
         },
@@ -120,7 +119,7 @@ export function UserFormDialog({ open, onOpenChange, user }: UserFormDialogProps
               <Label htmlFor="role">Rol</Label>
               <Select value={role} onValueChange={(value) => value && setRole(value)}>
                 <SelectTrigger>
-                  <SelectValue />
+                  <SelectValue>{role === "admin" ? "Administrador" : "Editor"}</SelectValue>
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="editor">Editor</SelectItem>
