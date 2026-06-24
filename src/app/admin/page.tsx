@@ -134,11 +134,11 @@ export default function DashboardPage() {
                     <span className="text-sm text-muted-foreground">
                       {product.discount_price ? (
                         <span className="flex items-center gap-1.5">
-                          <span className="line-through">${Number(product.price).toFixed(2)}</span>
-                          <span className="text-destructive font-medium">${Number(product.discount_price).toFixed(2)}</span>
+                          <span className="line-through">S/{Number(product.price).toFixed(2)}</span>
+                          <span className="text-destructive font-medium">S/{Number(product.discount_price).toFixed(2)}</span>
                         </span>
                       ) : (
-                        <>${Number(product.price).toFixed(2)}</>
+                        <>S/{Number(product.price).toFixed(2)}</>
                       )}
                     </span>
                     <Badge variant={product.stock ? "default" : "secondary"} className="text-[10px]">

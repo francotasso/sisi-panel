@@ -18,7 +18,8 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
-import { MoreHorizontal, Pencil, Trash2, Search, LayoutGrid } from "lucide-react";
+import Image from "next/image";
+import { MoreHorizontal, Pencil, Trash2, Search, LayoutGrid, ImageIcon } from "lucide-react";
 import { EmptyState } from "@/components/shared/empty-state";
 import { useCategories } from "../hooks/use-categories";
 import { useDeleteCategory } from "../hooks/use-delete-category";
@@ -38,13 +39,19 @@ export function CategoriesTable() {
 
   const filtered = useMemo(() => {
     if (!data) return [];
-    if (!search) return data;
-    const q = search.toLowerCase();
-    return data.filter(
-      (c) =>
-        c.name.toLowerCase().includes(q) ||
-        String(c.id).toLowerCase().includes(q)
-    );
+
+    let result = data;
+    if (search) {
+      const q = search.toLowerCase();
+      result = data.filter(
+        (c) =>
+          c.name.toLowerCase().includes(q) ||
+          c.short_description?.toLowerCase().includes(q) ||
+          String(c.id).toLowerCase().includes(q)
+      );
+    }
+
+    return result;
   }, [data, search]);
 
   return (
@@ -66,8 +73,9 @@ export function CategoriesTable() {
           <Table>
             <TableHeader>
               <TableRow className="bg-muted/30">
-                <TableHead>ID</TableHead>
+                <TableHead className="w-[40px]"></TableHead>
                 <TableHead>Nombre</TableHead>
+                <TableHead>Descripción corta</TableHead>
                 {!isEditor && <TableHead className="w-[70px]"></TableHead>}
               </TableRow>
             </TableHeader>
@@ -75,6 +83,7 @@ export function CategoriesTable() {
               {isLoading ? (
                 Array.from({ length: 3 }).map((_, i) => (
                   <TableRow key={i}>
+                    <TableCell><Skeleton className="h-8 w-8 rounded-md" /></TableCell>
                     {Array.from({ length: isEditor ? 2 : 3 }).map((_, j) => (
                       <TableCell key={j}>
                         <Skeleton className="h-4 w-full" />
@@ -84,7 +93,7 @@ export function CategoriesTable() {
                 ))
               ) : filtered.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={isEditor ? 2 : 3}>
+                  <TableCell colSpan={isEditor ? 3 : 4}>
                     <EmptyState icon="sparkles" title="Sin categorías" description="Creá una categoría para empezar." />
                   </TableCell>
                 </TableRow>
@@ -97,12 +106,30 @@ export function CategoriesTable() {
                       idx % 2 === 0 ? "bg-background" : "bg-muted/20"
                     )}
                   >
-                    <TableCell className="text-muted-foreground font-mono text-xs max-w-[100px] truncate">{category.id}</TableCell>
+                    <TableCell>
+                      {category.image ? (
+                        <div className="relative h-8 w-8 overflow-hidden rounded-md border bg-muted">
+                          <Image
+                            src={category.image}
+                            alt={category.name}
+                            fill
+                            className="object-cover"
+                          />
+                        </div>
+                      ) : (
+                        <div className="flex h-8 w-8 items-center justify-center rounded-md bg-muted">
+                          <ImageIcon className="h-4 w-4 text-muted-foreground" />
+                        </div>
+                      )}
+                    </TableCell>
                     <TableCell className="font-medium">
                       <div className="flex items-center gap-2">
                         <LayoutGrid className="h-3.5 w-3.5 text-muted-foreground" />
                         {category.name}
                       </div>
+                    </TableCell>
+                    <TableCell className="text-muted-foreground text-sm max-w-[200px] truncate">
+                      {category.short_description || "—"}
                     </TableCell>
                     {!isEditor && (
                       <TableCell>

@@ -21,11 +21,15 @@ export function useBulkUpload() {
         variables.mode === "replace" ? "reemplazados" : "agregados";
       toast.success(`${result.created} producto(s) ${action} exitosamente`);
       if (result.errors && result.errors.length > 0) {
-        toast.error(`${result.errors.length} error(es) en la carga`);
+        const items = result.errors.slice(0, 3).map((e) => `Producto ${e.index + 1}: ${e.error}`);
+        const remainder = result.errors.length - items.length;
+        if (remainder > 0) items.push(`...y ${remainder} más`);
+        toast.error(items.join("\n"));
       }
     },
     onError: (error) => {
-      toast.error(error instanceof Error ? error.message : "Error al subir productos");
+      const msg = error instanceof Error ? error.message : "Error al subir productos";
+      toast.error(msg);
     },
   });
 }

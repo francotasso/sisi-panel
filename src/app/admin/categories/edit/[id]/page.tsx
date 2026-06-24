@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { useState, useEffect } from "react";
 import { useRouter, useParams } from "next/navigation";
 import { toast } from "sonner";
 import { PageHeader } from "@/components/shared/page-header";
@@ -8,8 +8,10 @@ import { FormSkeleton } from "@/components/shared/form-skeleton";
 import { CategoryForm } from "@/modules/categories/components/category-form";
 import { useCategory } from "@/modules/categories/hooks/use-category";
 import { useUpdateCategory } from "@/modules/categories/hooks/use-update-category";
+import { useUploadCategoryImage } from "@/modules/categories/hooks/use-upload-category-image";
 import { useAuthStore } from "@/stores/auth-store";
 import type { CategoryFormData } from "@/modules/categories/types";
+import type { PendingImage } from "@/modules/categories/components/category-form";
 
 export default function EditCategoryPage() {
   const router = useRouter();
@@ -19,6 +21,13 @@ export default function EditCategoryPage() {
     const u = s.user;
     return u?.role === "editor" || u?.user_metadata?.role === "editor";
   });
+  const { data: category, isLoading } = useCategory(categoryId);
+  const updateCategory = useUpdateCategory(categoryId);
+  const uploadImage = useUploadCategoryImage();
+  const [pendingImage, setPendingImage] = useState<PendingImage | null>(null);
+  const [isUploading, setIsUploading] = useState(false);
+
+  const isPending = updateCategory.isPending || isUploading;
 
   useEffect(() => {
     if (isEditor) router.replace("/admin/categories");
@@ -26,14 +35,45 @@ export default function EditCategoryPage() {
 
   if (isEditor) return null;
 
-  const { data: category, isLoading } = useCategory(categoryId);
-  const updateCategory = useUpdateCategory(categoryId);
-
   const onSubmit = (data: CategoryFormData) => {
-    updateCategory.mutate(data, {
+    if (!category) return;
+
+    const submitData: CategoryFormData = {
+      name: data.name,
+      short_description: data.short_description,
+    };
+    if (pendingImage) {
+      // will upload after update
+    } else if (data.image) {
+      submitData.image = data.image;
+    } else if (data.image === null) {
+      submitData.image = null;
+    }
+
+    updateCategory.mutate(submitData, {
       onSuccess: () => {
-        toast.success("Categoría actualizada correctamente");
-        router.push("/admin/categories");
+        if (pendingImage) {
+          setIsUploading(true);
+          uploadImage.mutate(
+            { categoryId: category.id, file: pendingImage.file },
+            {
+              onSuccess: () => {
+                toast.success("Categoría actualizada correctamente");
+                router.push("/admin/categories");
+              },
+              onError: () => {
+                toast.error("Categoría actualizada, pero hubo un error al subir la imagen");
+                router.push("/admin/categories");
+              },
+              onSettled: () => {
+                setIsUploading(false);
+              },
+            }
+          );
+        } else {
+          toast.success("Categoría actualizada correctamente");
+          router.push("/admin/categories");
+        }
       },
     });
   };
@@ -58,7 +98,9 @@ export default function EditCategoryPage() {
       <CategoryForm
         category={category}
         onSubmit={onSubmit}
-        isSubmitting={updateCategory.isPending}
+        isSubmitting={isPending}
+        pendingImage={pendingImage}
+        onPendingImageChange={setPendingImage}
       />
     </div>
   );

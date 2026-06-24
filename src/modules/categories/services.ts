@@ -16,4 +16,10 @@ export const categoriesService = {
 
   delete: (id: string) =>
     apiClient.delete<void>(`/categories/${id}`),
+
+  uploadImage: (id: string, file: File) => {
+    const formData = new FormData();
+    formData.append("file", file);
+    return apiClient.uploadFile<Category>(`/categories/${id}/image`, formData);
+  },
 };

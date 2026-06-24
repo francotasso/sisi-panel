@@ -10,7 +10,6 @@ export function useCreateCategory() {
     mutationFn: (data: CategoryFormData) => categoriesService.create(data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["categories"] });
-      toast.success("Categoría creada exitosamente");
     },
     onError: (error) => {
       toast.error(error instanceof Error ? error.message : "Error al crear categoría");

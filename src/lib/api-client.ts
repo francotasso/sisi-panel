@@ -75,10 +75,15 @@ class ApiClient {
       }
 
       const error = await response.json().catch(() => ({}));
-      throw new ApiError(
-        error.detail || error.message || "An error occurred",
-        response.status
-      );
+      const detail = error.detail ?? error.message;
+      const message = Array.isArray(detail)
+        ? detail.map((d: Record<string, unknown>) => String(d.msg ?? d)).join("; ")
+        : typeof detail === "string"
+          ? detail
+          : typeof detail === "object" && detail !== null
+            ? JSON.stringify(detail)
+            : "An error occurred";
+      throw new ApiError(message, response.status);
     }
 
     if (response.status === 204) {
@@ -153,10 +158,15 @@ class ApiClient {
       }
 
       const error = await response.json().catch(() => ({}));
-      throw new ApiError(
-        error.detail || error.message || "An error occurred",
-        response.status
-      );
+      const detail = error.detail ?? error.message;
+      const message = Array.isArray(detail)
+        ? detail.map((d: Record<string, unknown>) => String(d.msg ?? d)).join("; ")
+        : typeof detail === "string"
+          ? detail
+          : typeof detail === "object" && detail !== null
+            ? JSON.stringify(detail)
+            : "An error occurred";
+      throw new ApiError(message, response.status);
     }
 
     if (response.status === 204) {

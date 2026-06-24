@@ -207,7 +207,7 @@ export function ProductsTable({ categories }: ProductsTableProps) {
               ) : (
                 data?.items.map((product, idx) => (
                   <TableRow
-                    key={product.id}
+                    key={product.id ?? product.slug ?? idx}
                     className={cn(
                       "transition-colors",
                       idx % 2 === 0 ? "bg-background" : "bg-muted/20"
@@ -242,15 +242,15 @@ export function ProductsTable({ categories }: ProductsTableProps) {
                     <TableCell>
                       {product.discount_price ? (
                         <div className="flex items-center gap-1.5">
-                          <span className="line-through text-muted-foreground">${Number(product.price).toFixed(2)}</span>
-                          <span className="text-destructive font-medium">${Number(product.discount_price).toFixed(2)}</span>
+                          <span className="line-through text-muted-foreground">S/{Number(product.price).toFixed(2)}</span>
+                          <span className="text-destructive font-medium">S/{Number(product.discount_price).toFixed(2)}</span>
                         </div>
                       ) : (
-                        <span>${Number(product.price).toFixed(2)}</span>
+                        <span>S/{Number(product.price).toFixed(2)}</span>
                       )}
                     </TableCell>
                     <TableCell className="text-muted-foreground font-mono text-xs">
-                      {product.sku ?? "—"}
+                      {product.sku || "—"}
                     </TableCell>
                     <TableCell>
                       <Badge variant="outline">

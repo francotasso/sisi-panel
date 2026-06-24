@@ -319,7 +319,7 @@ export function ProductForm({ product, categories, onSubmit, isSubmitting, pendi
                   <FormItem>
                     <FormLabel>SKU</FormLabel>
                     <FormControl>
-                      <Input placeholder="SKU del producto" {...field} />
+                      <Input placeholder="Auto-generado" disabled {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
